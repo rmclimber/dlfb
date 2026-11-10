@@ -1,16 +1,41 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=77,<85"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "dlfb"
 description = "Companion Library for Deep Learning for Biology"
-requires-python = ">=3.10"  # NOTE: relaxed this as some colab envs can differ
+requires-python = ">=3.12,<3.14"
 authors = [
   {name = "Charles Ravarani", email = "c.ravarani@gmail.com"},
   {name = "Natasha Latysheva", email = "nslatysheva@gmail.com"},
 ]
-version = "0.1.1"
+version = "0.2.0"
+dependencies = [
+  "numpy>=2.2,<3",
+  "jax>=0.11.1,<0.12",
+  "flax>=0.12.12,<0.13",
+  "optax>=0.2.8,<0.3",
+  "orbax-checkpoint>=0.12.9,<0.13",
+  "requests>=2.32,<3",
+  "parfive>=2.3.1,<3",
+  "typer>=0.29,<0.30",
+]
+
+[project.optional-dependencies]
+dna = [
+  "pandas>=2.2.3,<4",
+  "scikit-learn>=1.6,<2",
+  "matplotlib>=3.10,<4",
+  "seaborn>=0.13.2,<0.14",
+  "tqdm>=4.67,<5",
+]
+notebook = ["ipython>=7.34,<10", "ipykernel>=6.29,<8"]
+cuda12 = ["jax[cuda12]>=0.11.1,<0.12; sys_platform == 'linux'"]
+cuda13 = ["jax[cuda13]>=0.11.1,<0.12; sys_platform == 'linux'"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "nbclient>=0.10,<0.11", "nbformat>=5.10,<6", "ipykernel>=6.29,<8", "ruff>=0.14,<1"]
 
 [project.scripts]
 dlfb-provision = "dlfb.provision:app"
@@ -18,10 +43,14 @@ dlfb-provision = "dlfb.provision:app"
 [tool.setuptools.packages.find]
 where = ["src/"]
 
-[tool.uv.pip]
-# NOTE: pytorch requires special attention when installing with uv
-#       see https://docs.astral.sh/uv/guides/integration/pytorch/#using-uv-with-pytorch
-extra-index-url = [
-  "https://storage.googleapis.com/jax-releases/jax_releases.html",
-  "https://download.pytorch.org/whl/cpu"
-]
+[tool.uv]
+environments = ["sys_platform == 'linux'", "sys_platform == 'win32'"]
+conflicts = [[{ extra = "cuda12" }, { extra = "cuda13" }]]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+indent-width = 2
+target-version = "py312"

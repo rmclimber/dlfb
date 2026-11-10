@@ -61,9 +61,13 @@ def provision_assets(chapter, base_url, destination, models, chunk) -> None:
     else:
         dl_big.enqueue_file(url=url, path=dest)
   if dl_small.queued_downloads:
-    dl_small.download()
+    results = dl_small.download()
+    if results.errors:
+      raise RuntimeError(f"Failed to download {len(results.errors)} asset(s).")
   if dl_big.queued_downloads:
-    dl_big.download()
+    results = dl_big.download()
+    if results.errors:
+      raise RuntimeError(f"Failed to download {len(results.errors)} asset(s).")
 
 
 def get_sized_prefixes(base_url: str, chapter: str, models: bool) -> List[Tuple[int, str]]:
@@ -78,3 +82,7 @@ def get_sized_prefixes(base_url: str, chapter: str, models: bool) -> List[Tuple[
     if c == chapter and (k == "datasets" or (models and k == "models")):
       sized_prefixes.append((size, prefix))
   return sized_prefixes
+
+
+if __name__ == "__main__":
+  app()

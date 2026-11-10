@@ -1,0 +1,32 @@
+[
+  {
+    "filename": "CTCF_test_sequences.csv",
+    "url": "https://assets.deep-learning-for-biology.com/dna/datasets/CTCF_test_sequences.csv",
+    "sha256": "b505731a5c84106d285fcceaed71115a6c818be224c83ffb484839d35ab8b714"
+  },
+  {
+    "filename": "CTCF_train_sequences.csv",
+    "url": "https://assets.deep-learning-for-biology.com/dna/datasets/CTCF_train_sequences.csv",
+    "sha256": "5d3b9a753b47e2abef21ec37ce3944499e51f56cef1a814f3649d82258bdbdc6"
+  },
+  {
+    "filename": "CTCF_valid_sequences.csv",
+    "url": "https://assets.deep-learning-for-biology.com/dna/datasets/CTCF_valid_sequences.csv",
+    "sha256": "447b5fb1024d02e5630dad2d33a05b99304cafc30bfc4a8dba0e523ee46af3fb"
+  },
+  {
+    "filename": "ZNF24_test_sequences.csv",
+    "url": "https://assets.deep-learning-for-biology.com/dna/datasets/ZNF24_test_sequences.csv",
+    "sha256": "bd7de56b47879725fad82b262a5869b268412fb6be60ebb49bbe7fdb17c036b8"
+  },
+  {
+    "filename": "ZNF24_train_sequences.csv",
+    "url": "https://assets.deep-learning-for-biology.com/dna/datasets/ZNF24_train_sequences.csv",
+    "sha256": "d543c970480dae427c397d94fcb0a34c5bbfe1ab38fe950623f005ed2a2014c7"
+  },
+  {
+    "filename": "ZNF24_valid_sequences.csv",
+    "url": "https://assets.deep-learning-for-biology.com/dna/datasets/ZNF24_valid_sequences.csv",
+    "sha256": "c7da3e82823669226b2315abe451043b30a16a8db6dbf144dd57de65dd92e070"
+  }
+]

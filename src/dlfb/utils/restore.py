@@ -18,18 +18,45 @@ def store(store_path, state, metrics) -> None:
     save_final_checkpoint(mngr, state, metrics)
 
 
+def restore_for_inference(store_path, state):
+  """Load model weights without restoring the optimizer or training step.
+
+  Use this explicitly for historical checkpoints whose optimizer serialization
+  differs from the installed Optax/Orbax versions. Full restore() remains strict
+  so a training-state mismatch cannot silently reset or discard optimizer data.
+  """
+  model_state = {"params": state.params}
+  if hasattr(state, "batch_stats"):
+    model_state["batch_stats"] = state.batch_stats
+  abstract = jax.tree_util.tree_map(ocp.utils.to_shape_dtype_struct, model_state)
+  step_path = Path(store_path).resolve() / "0"
+  with ocp.PyTreeCheckpointer() as checkpointer:
+    restored = checkpointer.restore(
+      step_path / "state",
+      args=ocp.args.PyTreeRestore(
+        item=abstract,
+        restore_args=ocp.checkpoint_utils.construct_restore_args(model_state),
+        partial_restore=True,
+      ),
+    )
+  with ocp.Checkpointer(ocp.JsonCheckpointHandler()) as checkpointer:
+    metrics = checkpointer.restore(step_path / "extra_metadata")
+  return state.replace(**restored), metrics
+
+
 def restorable(train_fn):
   # NOTE: wraps required for proper display with 'inspect'
   @wraps(train_fn)
   def wrapper(state, store_path: str | None = None, **kwargs):
     if store_path:
-      mngr = ocp.CheckpointManager(Path(store_path).resolve())
-      try:
-        state, metrics = restore_checkpoint(mngr, state)
-      except FileNotFoundError:
-        log.debug("Training new model checkpointing state and metrics...")
-        state, metrics = train_fn(state, **kwargs)
-        save_final_checkpoint(mngr, state, metrics)
+      checkpoint_path = Path(store_path).resolve()
+      with ocp.CheckpointManager(checkpoint_path) as mngr:
+        if (checkpoint_path / "0").exists():
+          state, metrics = restore_checkpoint(mngr, state)
+        else:
+          log.debug("Training new model checkpointing state and metrics...")
+          state, metrics = train_fn(state, **kwargs)
+          save_final_checkpoint(mngr, state, metrics)
     else:
       log.debug("Training new model without checkpointing...")
       state, metrics = train_fn(state, **kwargs)

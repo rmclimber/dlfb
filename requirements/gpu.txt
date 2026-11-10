@@ -1,2 +1,2 @@
-jax-cuda12-pjrt==0.5.1
-jax-cuda12-plugin==0.5.1
+# CUDA 12 is optional; never install Triton independently.
+jax[cuda12]>=0.11.1,<0.12; sys_platform == 'linux'
