@@ -43,10 +43,21 @@ class NumpyDataset:
   def __iter__(self) -> Iterator[dict[str, np.ndarray]]:
     return self.as_numpy_iterator()
 
+  def batch(self, batch_size: int, drop_remainder: bool = False):
+    """Rebatch the underlying examples; retain the book's batching calls."""
+    result = NumpyDataset(
+      self.data, batch_size, is_training=self.is_training, seed=self.seed
+    )
+    result.drop_remainder = drop_remainder
+    return result
+
   def as_numpy_iterator(self) -> Iterator[dict[str, np.ndarray]]:
     """Return independent batches; retain the book's iterator interface."""
     if not self.is_training:
-      for start in range(0, self.num_samples, self.batch_size):
+      stop = self.num_samples
+      if getattr(self, "drop_remainder", False):
+        stop -= stop % self.batch_size
+      for start in range(0, stop, self.batch_size):
         yield {
           name: values[start : start + self.batch_size]
           for name, values in self.data.items()

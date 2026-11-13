@@ -1,4 +1,4 @@
-name: Foundation and DNA
+name: Foundation, DNA and proteins
 on: [push, pull_request]
 jobs:
   dna:
@@ -15,10 +15,10 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m pip install uv==0.11.26
-      - run: uv sync --extra dna --locked --python ${{ matrix.python }}
+      - run: uv sync --extra dna --extra proteins --locked --python ${{ matrix.python }}
       - run: uv pip check
-      - run: uv run --extra dna --locked pytest -q
+      - run: uv run --extra dna --extra proteins --locked pytest -q
       - run: >-
-          uv run --extra dna --locked ruff check
+          uv run --extra dna --extra proteins --locked ruff check
           src/dlfb/data.py src/dlfb/dna/dataset.py src/dlfb/dna/train.py
           src/dlfb/utils/restore.py scripts tests

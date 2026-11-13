@@ -23,6 +23,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+proteins = ["pandas>=2.2.3,<4", "scikit-learn>=1.6,<2", "matplotlib>=3.10,<4", "seaborn>=0.13.2,<0.14", "tqdm>=4.67,<5", "adjusttext>=1.3,<2", "py3Dmol>=2.1,<3", "biopython>=1.85,<2", "obonet>=1,<2", "pyarrow>=23,<27", "transformers>=4.57.6,<4.58", "torch>=2.11,<2.12"]
+proteins-gpu = ["pandas>=2.2.3,<4", "scikit-learn>=1.6,<2", "matplotlib>=3.10,<4", "seaborn>=0.13.2,<0.14", "tqdm>=4.67,<5", "adjusttext>=1.3,<2", "py3Dmol>=2.1,<3", "biopython>=1.85,<2", "obonet>=1,<2", "pyarrow>=23,<27", "transformers>=4.57.6,<4.58", "torch>=2.11,<2.12"]
 dna = [
   "pandas>=2.2.3,<4",
   "scikit-learn>=1.6,<2",
@@ -45,7 +47,21 @@ where = ["src/"]
 
 [tool.uv]
 environments = ["sys_platform == 'linux'", "sys_platform == 'win32'"]
-conflicts = [[{ extra = "cuda12" }, { extra = "cuda13" }]]
+conflicts = [[{ extra = "cuda12" }, { extra = "cuda13" }], [{extra = "proteins"}, {extra = "proteins-gpu"}]]
+
+[[tool.uv.index]]
+name = "torch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = [{index = "torch-cpu", extra = "proteins"}, {index = "torch-cu128", extra = "proteins-gpu"}]
+
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

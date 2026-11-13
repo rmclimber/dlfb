@@ -7,3 +7,5 @@
 build/
 dist/
 .dna-environment.json
+
+.proteins-environment.json

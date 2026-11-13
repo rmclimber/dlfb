@@ -9,7 +9,7 @@ The library is installed as one of the setup steps in the Colab notebooks availa
 The shared foundation and DNA chapter now support Python **3.12 and 3.13**.
 Dependencies live in `pyproject.toml` and the tested versions are recorded in
 `uv.lock`. The core is JAX/Flax/Optax/Orbax; DNA needs neither TensorFlow nor
-PyTorch. The other four chapters have **not** been migrated or validated against
+PyTorch. The graph, cancer and localization chapters have **not** been migrated or validated against
 0.2; their legacy requirements files are retained for the later chapter passes.
 
 ```sh
@@ -94,3 +94,7 @@ Or more plainly as "Ravarani & Latysheva, Deep Learning for Biology, O’Reilly 
 ## License
 
 The **code** in this repository is licensed under the Apache 2.0 License.
+
+## Protein chapter
+
+See [PROTEINS.md](PROTEINS.md) for the modernized chapter, environment profiles and tests.

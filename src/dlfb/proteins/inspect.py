@@ -1,5 +1,6 @@
 import jax
 import matplotlib.pyplot as plt
+import torch
 from matplotlib.figure import Figure
 from transformers import PreTrainedModel, PreTrainedTokenizer
 
@@ -28,14 +29,18 @@ class MaskPredictor:
     """Return model probabilities for masked amino acid at a position."""
     masked_sequence = self.mask_sequence(sequence, mask_index)
     masked_inputs = self.tokenizer(masked_sequence, return_tensors="pt")
-    model_outputs = self.model(**masked_inputs)
-    mask_preds = model_outputs.logits[0, mask_index + 1].detach().numpy()
+    device = next(self.model.parameters()).device
+    masked_inputs = {k: v.to(device) for k, v in masked_inputs.items()}
+    self.model.eval()
+    with torch.inference_mode():
+      model_outputs = self.model(**masked_inputs)
+    mask_preds = model_outputs.logits[0, mask_index + 1].cpu().numpy()
     mask_probs = jax.nn.softmax(mask_preds)
     return mask_probs
 
   @staticmethod
   def mask_sequence(sequence: str, mask_index: int) -> str:
     """Insert mask token at specified index in the input sequence."""
-    if mask_index < 0 or mask_index > len(sequence):
+    if mask_index < 0 or mask_index >= len(sequence):
       raise ValueError("Mask index outside of sequence range.")
-    return f"{sequence[0:mask_index]}<mask>{sequence[(mask_index + 1):]}"
+    return f"{sequence[0:mask_index]}<mask>{sequence[(mask_index + 1) :]}"
